@@ -41,6 +41,8 @@
 
 
 /* Private variables ---------------------------------------------------------*/
+uint8_t mode = 0, playLevel = 0, playerNote = 0, myNotesTotal = 0; uint8_t playerSeq[10] = {0}, mySeq[10] = {0};
+uint32_t t0 = 0;
 
 /* Embedded wave variables */
 
@@ -71,7 +73,7 @@ const char *waveName[MAX_WAVES] =  {		// Note wave name must be lower case
 
 /* Private function prototypes -----------------------------------------------*/
 
-
+void playTheButtonNote(uint8_t port);
 
 /* Main functions ------------------------------------------------------------*/
 
@@ -104,26 +106,74 @@ int main(void)
   while (1)
   {
 
-
   }
-
-
 }
-
 /*-----------------------------------------------------------*/
 
 /* User Task */
 void UserTask(void * argument)
 {
+	volatile uint8_t Tone = 0,p=0;  
+		// Define BOS variables
+	AddBOSvar(FMT_UINT8, (uint32_t) &Tone);
+	/* A little Pac-Man for a startup tune! */
+	B2(0.125); B3(0.0625); B2(0.125); B3(0.0625);
+	C3(0.125); C4(0.0625); C3(0.125); C4(0.0625); 
 
-	
   /* Infinite loop */
   for(;;)
   {
-
+		//Delay_ms(10);
+		
+		if(Tone==1)
+		{
+			Tone=0;
+			A4(0.25);
+			//IND_ON();
+			//p=1;
+		}
+		else if(Tone==2)
+		{
+			Tone=0;
+			B4(0.25);
+			//IND_ON();
+			//p=1;
+		}
+		else if(Tone==3)
+		{
+			Tone=0;
+			C4(0.25);
+			//IND_ON();
+			//p=1;
+		}
+		else if(Tone==4)
+		{
+			Tone=0;
+			D4(0.25);
+			//IND_ON();
+			//p=1;
+		}
+		else if(Tone==5)
+		{
+			Tone=0;
+			E4(0.25);
+			//IND_ON();
+			//p=1;
+		}
+		else if(Tone==6)
+		{
+			Tone=0;
+			F4(0.25);
+			//IND_ON();
+			//p=1;
+		}
+		else if(Tone==7)
+		{
+			Tone=0;
+			G4(0.25);
+		}
 	}
 }
-
 /*-----------------------------------------------------------*/
 
 /************************ (C) COPYRIGHT HEXABITZ *****END OF FILE****/
