@@ -113,65 +113,16 @@ int main(void)
 /* User Task */
 void UserTask(void * argument)
 {
-	volatile uint8_t Tone = 0,p=0;  
-		// Define BOS variables
-	AddBOSvar(FMT_UINT8, (uint32_t) &Tone);
 	/* A little Pac-Man for a startup tune! */
 	B2(0.125); B3(0.0625); B2(0.125); B3(0.0625);
 	C3(0.125); C4(0.0625); C3(0.125); C4(0.0625); 
+	B2(0.125); B3(0.0625); B2(0.125); B3(0.0625);
+	Fsharp3(0.125); Gsharp3(0.125); Asharp3(0.125); B3(0.125);
 
   /* Infinite loop */
   for(;;)
   {
-		//Delay_ms(10);
 		
-		if(Tone==1)
-		{
-			Tone=0;
-			A4(0.25);
-			//IND_ON();
-			//p=1;
-		}
-		else if(Tone==2)
-		{
-			Tone=0;
-			B4(0.25);
-			//IND_ON();
-			//p=1;
-		}
-		else if(Tone==3)
-		{
-			Tone=0;
-			C4(0.25);
-			//IND_ON();
-			//p=1;
-		}
-		else if(Tone==4)
-		{
-			Tone=0;
-			D4(0.25);
-			//IND_ON();
-			//p=1;
-		}
-		else if(Tone==5)
-		{
-			Tone=0;
-			E4(0.25);
-			//IND_ON();
-			//p=1;
-		}
-		else if(Tone==6)
-		{
-			Tone=0;
-			F4(0.25);
-			//IND_ON();
-			//p=1;
-		}
-		else if(Tone==7)
-		{
-			Tone=0;
-			G4(0.25);
-		}
 	}
 }
 /*-----------------------------------------------------------*/
