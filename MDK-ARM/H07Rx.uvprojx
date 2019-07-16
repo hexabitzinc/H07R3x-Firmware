@@ -14,16 +14,16 @@
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
-          <Device>STM32F091CBTx</Device>
+          <Device>STM32F091CCTx</Device>
           <Vendor>STMicroelectronics</Vendor>
           <PackID>Keil.STM32F0xx_DFP.2.0.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
-          <Cpu>IRAM(0x20000000,0x00008000) IROM(0x08000000,0x00020000) CPUTYPE("Cortex-M0") CLOCK(12000000) ELITTLE</Cpu>
+          <Cpu>IRAM(0x20000000,0x00008000) IROM(0x08000000,0x00040000) CPUTYPE("Cortex-M0") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F0xx_128 -FS08000000 -FL020000 -FP0($$Device:STM32F091CBTx$CMSIS\Flash\STM32F0xx_128.FLM))</FlashDriverDll>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F0xx_256 -FS08000000 -FL040000 -FP0($$Device:STM32F091CCTx$CMSIS\Flash\STM32F0xx_256.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:STM32F091CBTx$Drivers\CMSIS\Device\ST\STM32F0xx\Include\stm32f0xx.h</RegisterFile>
+          <RegisterFile>$$Device:STM32F091CCTx$Drivers\CMSIS\Device\ST\STM32F0xx\Include\stm32f0xx.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -33,7 +33,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:STM32F091CBTx$CMSIS\SVD\STM32F0x1.svd</SFDFile>
+          <SFDFile>$$Device:STM32F091CCTx$CMSIS\SVD\STM32F0x1.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
@@ -250,7 +250,7 @@
               <IROM>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x20000</Size>
+                <Size>0x40000</Size>
               </IROM>
               <XRAM>
                 <Type>0</Type>
@@ -275,7 +275,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x20000</Size>
+                <Size>0x40000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -388,14 +388,59 @@
               <FilePath>..\User\main.c</FilePath>
             </File>
             <File>
-              <FileName>wave_hi_there.c</FileName>
+              <FileName>left.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\wave_hi_there.c</FilePath>
+              <FilePath>..\User\left.c</FilePath>
             </File>
             <File>
-              <FileName>wave_how_r_u.c</FileName>
+              <FileName>right.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\wave_how_r_u.c</FilePath>
+              <FilePath>..\User\right.c</FilePath>
+            </File>
+            <File>
+              <FileName>backward.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\backward.c</FilePath>
+            </File>
+            <File>
+              <FileName>forward.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\forward.c</FilePath>
+            </File>
+            <File>
+              <FileName>down.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\down.c</FilePath>
+            </File>
+            <File>
+              <FileName>east.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\east.c</FilePath>
+            </File>
+            <File>
+              <FileName>facing.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\facing.c</FilePath>
+            </File>
+            <File>
+              <FileName>north.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\north.c</FilePath>
+            </File>
+            <File>
+              <FileName>south.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\south.c</FilePath>
+            </File>
+            <File>
+              <FileName>up.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\up.c</FilePath>
+            </File>
+            <File>
+              <FileName>west.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\west.c</FilePath>
             </File>
           </Files>
         </Group>
