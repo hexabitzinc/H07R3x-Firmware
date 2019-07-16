@@ -213,20 +213,27 @@ void Module_Init(void)
 Module_Status Module_MessagingTask(uint16_t code, uint8_t port, uint8_t src, uint8_t dst)
 {
 	Module_Status result = H07R3_OK;
+	uint16_t temp16;
 	
 	switch (code) {
 		case CODE_H07R3_PLAY_SINE:
 		{
 			float freq = 0.0;
-			float durationInSeconds = 0.0;
-			memcpy(&freq, &messageParams[0], sizeof(freq));
-			memcpy(&freq, &messageParams[sizeof(freq)], sizeof(durationInSeconds));
-			PlaySine(freq, MusicNotesNumOfSamples, durationInSeconds);
+			freq = (float)( (uint32_t) cMessage[port-1][4] << 24 ) + ( (uint32_t) cMessage[port-1][5] << 16 ) + ( (uint32_t) cMessage[port-1][6] << 8 ) + cMessage[port-1][7];
+			PlaySine(freq, cMessage[port-1][8], (float) cMessage[port-1][9] / 16.0f);
 			break;
 		}
 		case CODE_H07R3_PLAY_WAVE:
 		{
+			temp16 = (((uint16_t)cMessage[port-1][5])<<8) + (uint16_t)cMessage[port-1][6];
+			cMessage[port-1][messageLength[port-1]-1] = 0; 	// Terminate the wave name string
+			PlayWave((char *)&cMessage[port-1][7], cMessage[port-1][4], temp16);
 			break;
+		}
+		case CODE_H07R3_PLAY_Tone://notesFreq[note][octave]
+		{
+			PlaySine(notesFreq[cMessage[port-1][4]][cMessage[port-1][5]], MusicNotesNumOfSamples, (float) cMessage[port-1][6] / 16.0f);
+		 	break;
 		}
 		default:
 			result = H07R3_ERR_UnknownMessage;
