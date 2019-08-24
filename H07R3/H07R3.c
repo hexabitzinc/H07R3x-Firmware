@@ -152,7 +152,7 @@ static portBASE_TYPE demoCommand( int8_t *pcWriteBuffer, size_t xWriteBufferLen,
 										
 static const CLI_Command_Definition_t PlayCommandDefinition = {
 		(const int8_t *)"play",
-		(const int8_t *)"(H07R3) play:\r\n Syntax: play [tune]/[sine]/[wave] [note]/[freq]/[file]\r\n \
+		(const int8_t *)"play:\r\n Syntax: play [tune]/[sine]/[wave] [note]/[freq]/[file]\r\n \
 Play a musical tune or a sine wave or a wave file.\n\r Musical notes are:\n\r Cx, Dx, Ex, Fx, Gx, Ax, Bx OR:\n\r \
 DOx, REx, MIx, FAx, SOLx, LAx, SIx where x is octave number 1 to 9\n\r - Separate musical notes by a space.\n\r \
 - Add # after the note to raise it by a semitone (half-step).\n\r \
@@ -167,7 +167,7 @@ DO4 RE4 MI4[2] FA4 SOL4[0.5] LA4[3]\n\r\tC4 C4# D4 D4# [1] E4[2] F[0.25]\r\n\r\n
 
 static const CLI_Command_Definition_t ListCommandDefinition = {
 		(const int8_t *)"list",
-		(const int8_t *)"(H07R3) list:\r\n List embedded WAVE files\r\n\r\n",
+		(const int8_t *)"list:\r\n List embedded WAVE files\r\n\r\n",
 		ListCommand,
 		0,
 };
@@ -177,7 +177,7 @@ static const CLI_Command_Definition_t ListCommandDefinition = {
 const CLI_Command_Definition_t demoCommandDefinition =
 {
 	( const int8_t * ) "demo", /* The command string to type. */
-	( const int8_t * ) "(H07R3) demo:\r\n Run a demo program to test module functionality\r\n\r\n",
+	( const int8_t * ) "demo:\r\n Run a demo program to test module functionality\r\n\r\n",
 	demoCommand, /* The function to run. */
 	0 /* No parameters are expected. */
 };
@@ -210,23 +210,30 @@ void Module_Init(void)
 
 /* --- H07R3 message processing task. 
 */
-Module_Status Module_MessagingTask(uint16_t code, uint8_t port, uint8_t src, uint8_t dst)
+Module_Status Module_MessagingTask(uint16_t code, uint8_t port, uint8_t src, uint8_t dst, uint8_t shift)
 {
 	Module_Status result = H07R3_OK;
-	
+	uint16_t temp16;
+
 	switch (code) {
 		case CODE_H07R3_PLAY_SINE:
 		{
 			float freq = 0.0;
-			float durationInSeconds = 0.0;
-			memcpy(&freq, &messageParams[0], sizeof(freq));
-			memcpy(&freq, &messageParams[sizeof(freq)], sizeof(durationInSeconds));
-			PlaySine(freq, MusicNotesNumOfSamples, durationInSeconds);
+			freq = (float)(( (uint32_t) cMessage[port-1][shift] << 24 ) + ( (uint32_t) cMessage[port-1][shift+1] << 16 ) + ( (uint32_t) cMessage[port-1][shift+2] << 8 ) + cMessage[port-1][shift+3]);
+				PlaySine(freq, cMessage[port-1][shift+4], (float) cMessage[port-1][shift+5] / 16.0f); // time division 16
 			break;
 		}
 		case CODE_H07R3_PLAY_WAVE:
 		{
+			temp16 = (((uint16_t)cMessage[port-1][shift+1])<<8) + (uint16_t)cMessage[port-1][shift+2];
+			cMessage[port-1][messageLength[port-1]-1] = 0; 	// Terminate the wave name string
+			PlayWave((char *)&cMessage[port-1][shift+3], cMessage[port-1][shift], temp16);//1st parameter repeat time ,2nd & 3rd parameter for Delay time , and for WAV name for the latest parameters
 			break;
+		}
+		case CODE_H07R3_PLAY_TUNE://notesFreq[note][octave]
+		{
+			PlaySine(notesFreq[cMessage[port-1][shift]][cMessage[port-1][shift+1]], MusicNotesNumOfSamples, (float) cMessage[port-1][shift+2] / 16.0f);// time division 16
+		 	break;
 		}
 		default:
 			result = H07R3_ERR_UnknownMessage;
@@ -296,7 +303,7 @@ bool TS4990_Init(void)
 		return false;
 	
 	if (xTaskCreate(AudioPlayTask, (const char *)"AudioPlayTask", (2 * configMINIMAL_STACK_SIZE), 
-									NULL, osPriorityNormal, &AudioPlayTaskHandle) != pdPASS)
+									NULL, osPriorityNormal-osPriorityIdle, &AudioPlayTaskHandle) != pdPASS)
 		return false;
 	
 	TS4990_ENABLE();
@@ -544,7 +551,7 @@ static bool PlayCommandLineParser(const int8_t *pcCommandString, char **ppModeSt
 	} 
 	
 	// Wave mode
-	if (!strncmp(modeParams, waveModeString, max(strlen(waveModeString), modeStringParamLen)))
+	if (!strncmp(modeParams, waveModeString, fmax(strlen(waveModeString), modeStringParamLen)))
 	{
 		// Parse WAVE name
 		nameParams = (char *)FreeRTOS_CLIGetParameter(pcCommandString, 2, &lengthStringParamLen);
@@ -556,7 +563,7 @@ static bool PlayCommandLineParser(const int8_t *pcCommandString, char **ppModeSt
 		return true;
 	}
 	// Sine mode
-	else if (*tuneMode == false && strncmp(modeParams, tuneModeString, max(strlen(tuneModeString), modeStringParamLen)) != 0)
+	else if (*tuneMode == false && strncmp(modeParams, tuneModeString, fmax(strlen(tuneModeString), modeStringParamLen)) != 0)
 	{	
 		freqParams = (char *)FreeRTOS_CLIGetParameter(pcCommandString, 2, &freqStringParamLen);
 		lengthParams = (char *)FreeRTOS_CLIGetParameter(pcCommandString, 3, &lengthStringParamLen);
@@ -753,12 +760,12 @@ BaseType_t PlayCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8
 		if (PlayCommandLineParser(pcCommandString, &modeParams, &modeStringParamLen, &freq, &length, &tuneMode) == false)
 			break;
 		
-		if (tuneMode || !strncmp(modeParams, tuneModeString, max(strlen(tuneModeString), modeStringParamLen))) {		// Loop over this mode until all notes are proccessed
+		if (tuneMode || !strncmp(modeParams, tuneModeString, fmax(strlen(tuneModeString), modeStringParamLen))) {		// Loop over this mode until all notes are proccessed
 			PlaySine(freq, MusicNotesNumOfSamples, length);		
-		} else if (!strncmp(modeParams, sineModeString, max(strlen(sineModeString), modeStringParamLen))) {		// Execute this mode once
+		} else if (!strncmp(modeParams, sineModeString, fmax(strlen(sineModeString), modeStringParamLen))) {		// Execute this mode once
 			PlaySine(freq, MusicNotesNumOfSamples, length);
 			return pdFALSE;
-		} else if (!strncmp(modeParams, waveModeString, max(strlen(waveModeString), modeStringParamLen))) {		// Execute this mode once
+		} else if (!strncmp(modeParams, waveModeString, fmax(strlen(waveModeString), modeStringParamLen))) {		// Execute this mode once
 			AddAudioToPlaylist(waveAdd[(uint8_t)freq], waveLength[(uint8_t)freq], 0, waveResolution[(uint8_t)freq], 16000, 0);
 			return pdFALSE;
 		} else {

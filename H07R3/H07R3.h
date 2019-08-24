@@ -13,6 +13,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "BOS.h"
+#include "H07R3_MemoryMap.h"
 #include "H07R3_uart.h"	
 #include "H07R3_gpio.h"	
 #include "H07R3_dma.h"		
@@ -295,15 +296,6 @@ typedef struct AudioDesc_s {
 } AudioDesc_t;
 
 extern AudioDesc_t currentAudioDesc;
-
-
-/* -----------------------------------------------------------------------
-	|														Message Codes	 														 	|
-   ----------------------------------------------------------------------- 
-*/
-
-#define CODE_H07R3_PLAY_SINE							800
-#define CODE_H07R3_PLAY_WAVE							801
 
 	
 /* -----------------------------------------------------------------------
